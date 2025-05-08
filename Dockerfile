@@ -1,10 +1,13 @@
-FROM python:3.11-slim
+FROM python:3.13-alpine
 
-RUN pip install miniupnpc pyyaml
+# Install build tools temporarily for compiling miniupnpc
+RUN apk add --no-cache --virtual .build-deps \
+    build-base libffi-dev python3-dev libcap-dev \
+ && pip install --no-cache-dir miniupnpc pyyaml \
+ && apk del .build-deps  # Remove build tools after install
 
-COPY upnp_client.py /app/
-COPY ports.yaml /app/
-
+# Copy only required files
+COPY upnp_client.py /app/upnp_client.py
 WORKDIR /app
 
 CMD ["python", "upnp_client.py"]
