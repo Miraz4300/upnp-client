@@ -31,7 +31,4 @@ jobs:
         context: .
         push: ${{ github.event_name == 'push' }} # Only push on push events to main
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/upnp-client:latest # Replace with your desired image name
-        # You can add more tags here, for example, based on git commit SHA
-        # tags: |
-        #   ${{ secrets.DOCKERHUB_USERNAME }}/upnp-client:latest
-        #   ${{ secrets.DOCKERHUB_USERNAME }}/upnp-client:${{ github.sha }}
+
