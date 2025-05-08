@@ -1,6 +1,6 @@
 services:
   upnp-client:
-    build: .
+    image: miraz4300/upnp-client:latest
     container_name: upnp-client
     restart: unless-stopped
     network_mode: host  # Required for UPnP/SSDP multicast
