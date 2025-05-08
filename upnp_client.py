@@ -40,7 +40,7 @@ def signal_handler(sig, frame):
 # Display banner with system information
 def display_banner(upnp, mappings_count):
     print("\n" + "="*60)
-    print(pyfiglet.figlet_format("UPnP Mapper"))
+    print(pyfiglet.figlet_format("UPnP Client"))
     print("="*60)
     print(f"[✔] Hostname: {socket.gethostname()}")
     print(f"[✔] LAN IP: {upnp.lanaddr}")

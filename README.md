@@ -79,7 +79,6 @@ docker build -t upnp-client .
 
     ```yaml
     # docker-compose.yml
-    version: '3.8'
     services:
       upnp-client:
         image: miraz4300/upnp-client:latest
