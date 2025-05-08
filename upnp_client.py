@@ -13,6 +13,7 @@ CONFIG_PATH = '/config/ports.yaml'
 active_mappings = []
 start_time = datetime.now()
 
+# validate the config file
 def validate_entry(entry):
     required_fields = ['id', 'name', 'internal_port', 'external_port', 'protocol']
     for field in required_fields:
@@ -21,6 +22,7 @@ def validate_entry(entry):
     if str(entry['protocol']).upper() not in ['TCP', 'UDP']:
         raise ValueError(f"Invalid protocol '{entry['protocol']}' for {entry.get('name')}")
 
+# Cleanup function to remove port mappings
 def cleanup():
     print("\n[!] Cleaning up port mappings...")
     for ext_port, protocol in active_mappings:
@@ -30,10 +32,12 @@ def cleanup():
         except Exception as e:
             print(f"[!] Failed to remove {protocol} port {ext_port}: {e}")
 
+# Signal handler for cleanup on exit
 def signal_handler(sig, frame):
     cleanup()
     sys.exit(0)
 
+# Display banner with system information
 def display_banner(upnp, mappings_count):
     print("\n" + "="*60)
     print(pyfiglet.figlet_format("UPnP Mapper"))
@@ -53,7 +57,7 @@ atexit.register(cleanup)
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
-# Check config
+# Check config file existence
 if not os.path.exists(CONFIG_PATH):
     print("\n[!] Configuration file not found:")
     print(f"    Expected: {CONFIG_PATH}")
