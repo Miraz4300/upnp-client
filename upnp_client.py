@@ -4,6 +4,7 @@ import os
 import signal
 import atexit
 import sys
+import time
 
 CONFIG_PATH = '/config/ports.yaml'
 active_mappings = []  # Store tuples for cleanup
@@ -61,3 +62,11 @@ for entry in config:
         print(f"[+] Mapped {protocol} {external_port} -> {lan_ip}:{internal_port} (Name: {entry['name']})")
     except Exception as e:
         print(f"[!] Skipping entry due to error: {e}")
+
+# 💤 Prevent container from exiting
+print("[*] Port mappings applied. Container will now stay alive.")
+try:
+    while True:
+        time.sleep(60)
+except KeyboardInterrupt:
+    pass
