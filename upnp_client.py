@@ -9,13 +9,13 @@ CONFIG_PATH = '/config/ports.yaml'
 active_mappings = []  # Store tuples for cleanup
 
 def validate_entry(entry):
-    required_fields = ['id', 'internal_port', 'external_port', 'protocol']
+    required_fields = ['id', 'name', 'internal_port', 'external_port', 'protocol']
     for field in required_fields:
         if field not in entry:
             raise ValueError(f"Missing field '{field}' in entry: {entry}")
 
     if str(entry['protocol']).upper() not in ['TCP', 'UDP']:
-        raise ValueError(f"Invalid protocol '{entry['protocol']}' for ID {entry.get('id')}")
+        raise ValueError(f"Invalid protocol '{entry['protocol']}' for {entry.get('name')}")
 
 def cleanup():
     print("\n[!] Cleaning up port mappings...")
@@ -58,6 +58,6 @@ for entry in config:
 
         upnp.addportmapping(external_port, protocol, lan_ip, internal_port, f"UPnP Rule {entry['id']}", '')
         active_mappings.append((external_port, protocol))
-        print(f"[+] Mapped {protocol} {external_port} -> {lan_ip}:{internal_port}")
+        print(f"[+] Mapped {protocol} {external_port} -> {lan_ip}:{internal_port} (Name: {entry['name']})")
     except Exception as e:
         print(f"[!] Skipping entry due to error: {e}")

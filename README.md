@@ -15,7 +15,8 @@ The script requires a configuration file named `ports.yaml` located at `/config/
 
 The `ports.yaml` file should contain a list of port mapping entries. Each entry must have the following fields:
 
-- `id`: A unique identifier for the mapping rule (e.g., "webserver", "ssh").
+- `id`: A unique identifier for the mapping rule.
+- `name`: Your service name (e.g., "webserver", "ssh").
 - `internal_port`: The internal port number on the machine running the script.
 - `external_port`: The external port number to be opened on the router.
 - `protocol`: The protocol for the mapping (either `TCP` or `UDP`).
@@ -23,11 +24,13 @@ The `ports.yaml` file should contain a list of port mapping entries. Each entry 
 **Example `ports.yaml`:**
 
 ```yaml
-- id: "my-webserver"
+- id: 1
+  name: "my-webserver"
   internal_port: 8080
   external_port: 80
   protocol: "TCP"
-- id: "my-game"
+- id: 2
+  name: "my-game"
   internal_port: 27015
   external_port: 27015
   protocol: "UDP"

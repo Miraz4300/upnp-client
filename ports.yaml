@@ -1,19 +1,23 @@
 - id: 1
+  name: "WireGuard"
   internal_port: 51820
   external_port: 51820
   protocol: UDP
 
 - id: 2
+  name: "Web Server"
   internal_port: 9090
   external_port: 9090
   protocol: TCP
 
 - id: 3
+  name: "API Server"
   internal_port: 8080
   external_port: 8081
   protocol: TCP
 
 - id: 4
+  name: "Game Server"
   internal_port: 12345
   external_port: 12345
   protocol: UDP
