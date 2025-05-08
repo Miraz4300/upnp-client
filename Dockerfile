@@ -10,4 +10,4 @@ RUN apk add --no-cache --virtual .build-deps \
 COPY upnp_client.py /app/upnp_client.py
 WORKDIR /app
 
-CMD ["python", "upnp_client.py"]
+CMD ["python", "-u", "upnp_client.py"]
