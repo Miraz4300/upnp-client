@@ -1,0 +1,11 @@
+services:
+  upnp-client:
+    build: .
+    container_name: upnp-client
+    restart: unless-stopped
+    network_mode: host  # Required for UPnP/SSDP multicast
+    volumes:
+      - upnp-client:/config
+
+volumes:
+  upnp-client:

@@ -1,0 +1,19 @@
+- id: 1
+  internal_port: 51820
+  external_port: 51820
+  protocol: UDP
+
+- id: 2
+  internal_port: 9090
+  external_port: 9090
+  protocol: TCP
+
+- id: 3
+  internal_port: 8080
+  external_port: 8081
+  protocol: TCP
+
+- id: 4
+  internal_port: 12345
+  external_port: 12345
+  protocol: UDP
