@@ -12,6 +12,7 @@ import pyfiglet
 CONFIG_PATH = '/config/ports.yaml'
 active_mappings = []
 start_time = datetime.now()
+upnp = None
 
 # validate the config file
 def validate_entry(entry):
@@ -24,7 +25,17 @@ def validate_entry(entry):
 
 # Cleanup function to remove port mappings
 def cleanup():
+    global upnp
     print("\n[!] Cleaning up port mappings...")
+
+    if upnp is None:
+        print("[i] UPnP object not initialized. No UPnP cleanup actions taken.")
+        return
+
+    if not active_mappings:
+        print("[i] No active mappings to clean up.")
+        return
+
     for ext_port, protocol in active_mappings:
         try:
             upnp.deleteportmapping(ext_port, protocol)
@@ -68,21 +79,25 @@ with open(CONFIG_PATH, 'r') as f:
         print(f"[!] Failed to parse YAML: {e}")
         sys.exit(0)
 
-if not config:
-    print(f"[!] Config file at {CONFIG_PATH} is empty or invalid.")
+if not config or not isinstance(config, list):
+    print(f"[!] Config file at {CONFIG_PATH} is empty, invalid, or not a list.")
     print("Exiting.")
     sys.exit(0)
 
 # Register signal handlers only after config is valid
-atexit.register(cleanup)
+atexit.register(lambda: cleanup() if active_mappings else None)
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
-# Setup UPnP
-upnp = miniupnpc.UPnP()
-upnp.discover()
-upnp.selectigd()
-lan_ip = upnp.lanaddr
+# Setup UPnP with error handling
+try:
+    upnp = miniupnpc.UPnP()
+    upnp.discover()
+    upnp.selectigd()
+    lan_ip = upnp.lanaddr
+except Exception as e:
+    print(f"[!] UPnP setup failed: {e}")
+    sys.exit(1)
 
 # Apply mappings
 for entry in config:
@@ -107,4 +122,5 @@ try:
     while True:
         time.sleep(60)
 except KeyboardInterrupt:
-    pass
+    cleanup()
+    sys.exit(0)
