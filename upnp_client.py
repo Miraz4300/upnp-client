@@ -97,6 +97,9 @@ except Exception as e:
     print(f"[!] UPnP setup failed: {e}")
     sys.exit(1)
 
+# Store messages
+mapping_messages = []
+
 # Apply mappings
 for entry in config:
     try:
@@ -107,15 +110,22 @@ for entry in config:
 
         upnp.addportmapping(external_port, protocol, lan_ip, internal_port, f"UPnP Rule {entry['id']}", '')
         active_mappings.append((external_port, protocol))
-        print(f"[+] Mapped {protocol} {external_port} -> {lan_ip}:{internal_port} (Name: {entry['name']})", flush=True)
+        mapping_messages.append(f"[+] Mapped {protocol} {external_port} -> {lan_ip}:{internal_port} (Name: {entry['name']})")
     except Exception as e:
-        print(f"[!] Skipping entry due to error: {e}", flush=True)
+        entry_name = entry.get('name', entry.get('id', 'Unknown Entry'))
+        mapping_messages.append(f"[!] Skipping entry '{entry_name}' due to error: {e}")
 
 # Display banner
 display_banner(upnp, len(active_mappings))
 
+# Print stored messages
+if mapping_messages:
+    print("\n[i] Port Mapping Status:")
+    for msg in mapping_messages:
+        print(msg, flush=True)
+
 # Stay alive
-print("[*] Port mappings applied. Container will now stay alive.")
+print("\n[*] Port mappings applied. Container will now stay alive.")
 try:
     while True:
         time.sleep(60)
