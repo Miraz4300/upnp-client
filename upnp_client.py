@@ -7,7 +7,6 @@ import sys
 import socket
 import time
 from datetime import datetime
-import pyfiglet
 
 CONFIG_PATH = '/config/ports.yaml'
 active_mappings = []
@@ -50,9 +49,14 @@ def signal_handler(sig, frame):
 
 # Display banner with system information
 def display_banner(upnp, mappings_count):
-    print("="*60)
-    print(pyfiglet.figlet_format("UPnP Client"))
-    print("="*60)
+    print("""
+ _   _ ____        ____     ____ _ _            _   
+| | | |  _ \\ _ __ |  _ \\   / ___| (_) ___ _ __ | |_ 
+| | | | |_) | '_ \\| |_) | | |   | | |/ _ \\ '_ \\| __|
+| |_| |  __/| | | |  __/  | |___| | |  __/ | | | |_ 
+ \\___/|_|   |_| |_|_|      \\____|_|_|\\___|_| |_|\\__|
+""")
+    print("="*55)
     print(f"[✔] Hostname: {socket.gethostname()}")
     print(f"[✔] LAN IP: {upnp.lanaddr}")
     try:
@@ -61,7 +65,7 @@ def display_banner(upnp, mappings_count):
         print(f"[!] Failed to fetch public IP: {e}")
     print(f"[✔] Number of Port Mappings: {mappings_count}")
     print(f"[✔] Start Time: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
-    print("="*60)
+    print("="*55)
 
 # Check config file existence
 if not os.path.exists(CONFIG_PATH):
