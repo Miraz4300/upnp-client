@@ -65,27 +65,25 @@ def display_banner(upnp, mappings_count):
 
 # Check config file existence
 if not os.path.exists(CONFIG_PATH):
-    print("\n[!] Configuration file not found:")
-    print(f"    Expected: {CONFIG_PATH}")
-    print("    Please mount your config file using a volume:")
-    print("    Example: -v $(pwd)/config:/config\n")
-    print("Exiting.\n")
-    sys.exit(0)
+    print("[!] Configuration file not found.")
+    print("Exiting.")
+    sys.exit(1)
 
 with open(CONFIG_PATH, 'r') as f:
     try:
         config = yaml.safe_load(f)
     except yaml.YAMLError as e:
         print(f"[!] Failed to parse YAML: {e}")
-        sys.exit(0)
+        print("Exiting.")
+        sys.exit(1)
 
 if not config or not isinstance(config, list):
     print(f"[!] Config file at {CONFIG_PATH} is empty, invalid, or not a list.")
     print("Exiting.")
-    sys.exit(0)
+    sys.exit(1)
 
 # Register signal handlers only after config is valid
-atexit.register(lambda: cleanup() if active_mappings else None)
+atexit.register(cleanup)
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
