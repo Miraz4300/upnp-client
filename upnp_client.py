@@ -52,11 +52,6 @@ def display_banner(upnp, mappings_count):
     print(f"[✔] Start Time: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
     print("="*60 + "\n")
 
-# Register signal handlers
-atexit.register(cleanup)
-signal.signal(signal.SIGINT, signal_handler)
-signal.signal(signal.SIGTERM, signal_handler)
-
 # Check config file existence
 if not os.path.exists(CONFIG_PATH):
     print("\n[!] Configuration file not found:")
@@ -77,6 +72,11 @@ if not config:
     print(f"[!] Config file at {CONFIG_PATH} is empty or invalid.")
     print("Exiting.")
     sys.exit(0)
+
+# Register signal handlers only after config is valid
+atexit.register(cleanup)
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
 
 # Setup UPnP
 upnp = miniupnpc.UPnP()
