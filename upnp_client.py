@@ -50,7 +50,7 @@ def signal_handler(sig, frame):
 
 # Display banner with system information
 def display_banner(upnp, mappings_count):
-    print("\n" + "="*60)
+    print("="*60)
     print(pyfiglet.figlet_format("UPnP Client"))
     print("="*60)
     print(f"[✔] Hostname: {socket.gethostname()}")
@@ -61,7 +61,7 @@ def display_banner(upnp, mappings_count):
         print(f"[!] Failed to fetch public IP: {e}")
     print(f"[✔] Number of Port Mappings: {mappings_count}")
     print(f"[✔] Start Time: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
-    print("="*60 + "\n")
+    print("="*60)
 
 # Check config file existence
 if not os.path.exists(CONFIG_PATH):
