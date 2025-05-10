@@ -36,46 +36,9 @@ The `ports.yaml` file should contain a list of port mapping entries. Each entry 
   protocol: "UDP"
 ```
 
-## Dependencies
-
-- `miniupnpc`: A Python library for UPnP port mapping.
-- `PyYAML`: A Python library for YAML parsing.
-
-You can install these dependencies using pip:
-
-```bash
-pip install miniupnpc PyYAML
-```
-
-## Running the Script
-
-1.  **Create the configuration file**: Ensure `ports.yaml` is created and placed in the expected location (e.g., `/config/ports.yaml` if running in Docker, or update `CONFIG_PATH` in the script).
-2.  **Run the Python script**:
-    ```bash
-    python upnp_client.py
-    ```
-
-The script will output the status of each port mapping operation.
-
-## Docker Support
-
-This project includes a `Dockerfile` and `docker-compose.yml` for running the script in a containerized environment.
-
-**Prerequisites:**
-
-- Docker
-- Docker Compose
-
-**Building the Docker image:**
-
-```bash
-docker build -t upnp-client .
-```
-
 **Running with Docker Compose:**
 
-1.  Create a `ports.yaml` file in a directory that will be mounted into the container (e.g., `./config/ports.yaml` if you create a `config` directory in the project root).
-2.  Update the `volumes` section in `docker-compose.yml` if your `ports.yaml` is located elsewhere. By default, it expects `./config/ports.yaml` on the host to be mapped to `/config/ports.yaml` in the container.
+1.  Create a `ports.yaml` file in a directory that will be mounted into the container.
 
     ```yaml
     # docker-compose.yml
