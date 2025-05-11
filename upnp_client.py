@@ -129,7 +129,7 @@ if mapping_messages:
         print(msg, flush=True)
 
 # Stay alive
-print("\n[*] Port mappings applied. Container will now stay alive.")
+print("\n[*] Container will now stay alive!")
 try:
     while True:
         time.sleep(60)
