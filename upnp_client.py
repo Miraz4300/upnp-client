@@ -8,7 +8,7 @@ import socket
 import time
 from datetime import datetime
 
-CONFIG_PATH = '/config/ports.yaml'
+CONFIG_PATH = '/config/ports.yml'
 active_mappings = []
 start_time = datetime.now()
 upnp = None

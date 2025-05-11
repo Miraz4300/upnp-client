@@ -11,9 +11,9 @@ This script uses MiniUPnPc to manage UPnP port mappings based on a YAML configur
 
 ## Configuration
 
-The script requires a configuration file named `ports.yaml` located at `/config/ports.yaml` (configurable via the `CONFIG_PATH` variable in the script).
+The script requires a configuration file named `ports.yml`
 
-The `ports.yaml` file should contain a list of port mapping entries. Each entry must have the following fields:
+The `ports.yml` file should contain a list of port mapping entries. Each entry must have the following fields:
 
 - `id`: A unique identifier for the mapping rule.
 - `name`: Your service name (e.g., "webserver", "ssh").
@@ -21,7 +21,7 @@ The `ports.yaml` file should contain a list of port mapping entries. Each entry 
 - `external_port`: The external port number to be opened on the router.
 - `protocol`: The protocol for the mapping (either `TCP` or `UDP`).
 
-**Example `ports.yaml`:**
+**Example `ports.yml`:**
 
 ```yaml
 - id: 1
@@ -38,7 +38,7 @@ The `ports.yaml` file should contain a list of port mapping entries. Each entry 
 
 **Running with Docker Compose:**
 
-1.  Create a `ports.yaml` file in a directory that will be mounted into the container.
+1.  Create a `ports.yml` file in a directory that will be mounted into the container.
 
     ```yaml
     # docker-compose.yml
@@ -56,7 +56,7 @@ The `ports.yaml` file should contain a list of port mapping entries. Each entry 
     docker compose up -d
     ```
 
-The container will run in host network mode to allow UPnP discovery and operations. The script will read the configuration from the mounted `ports.yaml` file.
+The container will run in host network mode to allow UPnP discovery and operations. The script will read the configuration from the mounted `ports.yml` file.
 
 **Stopping and cleaning up (Docker Compose):**
 
