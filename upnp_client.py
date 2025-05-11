@@ -12,6 +12,7 @@ CONFIG_PATH = '/config/ports.yml'
 active_mappings = []
 start_time = datetime.now()
 upnp = None
+cleanup_done = False
 
 # validate the config file
 def validate_entry(entry):
@@ -24,7 +25,10 @@ def validate_entry(entry):
 
 # Cleanup function to remove port mappings
 def cleanup():
-    global upnp
+    global upnp, cleanup_done
+    if cleanup_done:
+        return
+    cleanup_done = True
     print("\n[!] Cleaning up port mappings...")
 
     if upnp is None:
