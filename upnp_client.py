@@ -7,8 +7,6 @@ import sys
 import socket
 import time
 import threading
-import requests
-import xml.etree.ElementTree as ET
 
 CONFIG_PATH = '/config/ports.yml'
 active_mappings = []
@@ -63,27 +61,6 @@ def display_banner(upnp, mappings_count):
 """)
     print("="*55)
     print(f"[✔] Hostname: {socket.gethostname()}")
-    # Try to get router info from device description XML
-    router_info = "Unknown"
-    try:
-        desc_url = getattr(upnp, 'descURL', None) or getattr(upnp, 'urlbase', None) or getattr(upnp, 'location', None)
-        if desc_url:
-            resp = requests.get(desc_url, timeout=5)
-            if resp.ok:
-                xml_root = ET.fromstring(resp.text)
-                ns = {'upnp': 'urn:schemas-upnp-org:device-1-0'}
-                device = xml_root.find('.//upnp:device', ns)
-                if device is not None:
-                    friendly_name = device.findtext('upnp:friendlyName', default='', namespaces=ns)
-                    manufacturer = device.findtext('upnp:manufacturer', default='', namespaces=ns)
-                    model_name = device.findtext('upnp:modelName', default='', namespaces=ns)
-                    model_number = device.findtext('upnp:modelNumber', default='', namespaces=ns)
-                    model_desc = device.findtext('upnp:modelDescription', default='', namespaces=ns)
-                    # Only show non-empty fields
-                    info_parts = [friendly_name, manufacturer, model_name, model_number, model_desc]
-                    router_info = ' | '.join([part for part in info_parts if part])
-    except Exception as e:
-        router_info = f"Unknown (error: {e})"
     print(f"[✔] Router: {router_info}")
     print(f"[✔] LAN IP: {upnp.lanaddr}")
     try:
@@ -117,12 +94,30 @@ atexit.register(cleanup)
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
+# Function to get router information
+def get_router_info(upnp):
+    try:
+        device_desc = upnp.get_validurl() or "Unknown"
+        device_model = upnp.device()
+        device_manufacturer = upnp.serverName() or "Unknown"
+        
+        # Extract more readable name from the URL if possible
+        router_name = device_manufacturer
+        if device_model:
+            router_name = f"{router_name} {device_model}"
+            
+        return router_name
+    except Exception as e:
+        print(f"[!] Failed to get router information: {e}")
+        return "Unknown Router"
+
 # Setup UPnP with error handling
 try:
     upnp = miniupnpc.UPnP()
     upnp.discover()
     upnp.selectigd()
     lan_ip = upnp.lanaddr
+    router_info = get_router_info(upnp)
 except Exception as e:
     print(f"[!] UPnP setup failed: {e}")
     sys.exit(1)
