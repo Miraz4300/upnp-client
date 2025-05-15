@@ -134,9 +134,9 @@ def refresh_mappings():
                 protocol = entry['protocol'].upper()
                 if not mapping_exists(external_port, protocol, lan_ip, internal_port):
                     upnp.addportmapping(external_port, protocol, lan_ip, internal_port, f"UPnP Rule {entry['id']}", '')
-                    print(f"[+] Refreshed mapping: {entry['name']} -> {external_port}/{protocol}", flush=True)
+                    print(f"[+] Refreshed mapping [{entry['name']}]: {external_port}/{protocol}", flush=True)
                 else:
-                    print(f"[i] Mapping for {entry['name']} -> {external_port}/{protocol} still exists. No refresh needed.", flush=True)
+                    print(f"[i] Mapping for [{entry['name']}]: {external_port}/{protocol} still exists. No refresh needed.", flush=True)
             except Exception as e:
                 entry_name = entry.get('name', entry.get('id', 'Unknown Entry'))
                 print(f"[!] Failed to refresh mapping for '{entry_name}': {e}", flush=True)
@@ -151,9 +151,9 @@ for entry in config:
         if not mapping_exists(external_port, protocol, lan_ip, internal_port):
             upnp.addportmapping(external_port, protocol, lan_ip, internal_port, f"UPnP Rule {entry['id']}", '')
             active_mappings.append((external_port, protocol))
-            mapping_messages.append(f"[+] Mapped {entry['name']} -> {external_port}/{protocol} -> {lan_ip}:{internal_port}")
+            mapping_messages.append(f"[+] Mapped [{entry['name']}]: {external_port}/{protocol} -> {lan_ip}:{internal_port}")
         else:
-            mapping_messages.append(f"[i] Mapping for {entry['name']} -> {external_port}/{protocol} -> {lan_ip}:{internal_port} already exists. Skipping.")
+            mapping_messages.append(f"[i] Mapping for [{entry['name']}]: {external_port}/{protocol} -> {lan_ip}:{internal_port} already exists. Skipping.")
     except Exception as e:
         entry_name = entry.get('name', entry.get('id', 'Unknown Entry'))
         mapping_messages.append(f"[!] Skipping entry '{entry_name}' due to error: {e}")
