@@ -61,7 +61,7 @@ def display_banner(upnp, mappings_count):
 """)
     print("="*55)
     print(f"[✔] Hostname: {socket.gethostname()}")
-    print(f"[✔] Router: {router_info}")
+    print(f"[✔] Router: COMING SOON")
     print(f"[✔] LAN IP: {upnp.lanaddr}")
     try:
         print(f"[✔] Public IP (via UPnP): {upnp.externalipaddress()}")
@@ -94,39 +94,12 @@ atexit.register(cleanup)
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
-# Function to get router information
-def get_router_info(upnp):
-    try:
-        # Get device information using the correct methods
-        device_model = upnp.statusinfo().get('NewConnectionStatus', '')
-        device_type = upnp.connectiontype().get('NewConnectionType', '')
-        friendly_name = upnp.igddata.get('friendlyName', '')
-        manufacturer = upnp.igddata.get('manufacturer', '')
-        model_name = upnp.igddata.get('modelName', '')
-        model_description = upnp.igddata.get('modelDescription', '')
-        
-        # Construct router info from available attributes
-        router_parts = []
-        if manufacturer:
-            router_parts.append(manufacturer)
-        if model_name:
-            router_parts.append(model_name)
-        if model_description and model_description not in router_parts:
-            router_parts.append(model_description)
-        
-        router_name = " ".join(router_parts) if router_parts else "Unknown Router"
-        return router_name
-    except Exception as e:
-        print(f"[!] Failed to get router information: {e}")
-        return "Unknown Router"
-
 # Setup UPnP with error handling
 try:
     upnp = miniupnpc.UPnP()
     upnp.discover()
     upnp.selectigd()
     lan_ip = upnp.lanaddr
-    router_info = get_router_info(upnp)
 except Exception as e:
     print(f"[!] UPnP setup failed: {e}")
     sys.exit(1)
