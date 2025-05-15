@@ -6,12 +6,10 @@ import atexit
 import sys
 import socket
 import time
-from datetime import datetime
 import threading
 
 CONFIG_PATH = '/config/ports.yml'
 active_mappings = []
-start_time = datetime.now()
 upnp = None
 cleanup_done = False
 
@@ -63,13 +61,13 @@ def display_banner(upnp, mappings_count):
 """)
     print("="*55)
     print(f"[✔] Hostname: {socket.gethostname()}")
+    print(f"[✔] Router: {upnp.friendlyname}")
     print(f"[✔] LAN IP: {upnp.lanaddr}")
     try:
         print(f"[✔] Public IP (via UPnP): {upnp.externalipaddress()}")
     except Exception as e:
         print(f"[!] Failed to fetch public IP: {e}")
     print(f"[✔] Number of Port Mappings: {mappings_count}")
-    print(f"[✔] Start Time: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
     print("="*55)
 
 # Check config file existence
