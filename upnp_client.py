@@ -125,8 +125,8 @@ def mapping_exists(external_port, protocol, lan_ip, internal_port):
 REFRESH_INTERVAL = 1800  # 30 minutes
 def refresh_mappings():
     while True:
-        print("[*] Started port refreshing system...", flush=True)
         time.sleep(REFRESH_INTERVAL)
+        print("[*] Started port refreshing system...", flush=True)
         for entry in config:
             try:
                 internal_port = int(entry['internal_port'])
