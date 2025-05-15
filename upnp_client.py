@@ -7,6 +7,8 @@ import sys
 import socket
 import time
 import threading
+import requests
+import xml.etree.ElementTree as ET
 
 CONFIG_PATH = '/config/ports.yml'
 active_mappings = []
@@ -64,8 +66,6 @@ def display_banner(upnp, mappings_count):
     # Try to get router info from device description XML
     router_info = "Unknown"
     try:
-        import requests
-        import xml.etree.ElementTree as ET
         desc_url = getattr(upnp, 'urlbase', None) or getattr(upnp, 'location', None)
         if desc_url:
             resp = requests.get(desc_url, timeout=5)

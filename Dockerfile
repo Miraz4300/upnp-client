@@ -8,7 +8,7 @@ RUN pip wheel --no-cache-dir --wheel-dir=/wheels miniupnpc
 # Final Image
 FROM alpine:latest
 
-RUN apk add --no-cache python3 py3-yaml libffi
+RUN apk add --no-cache python3 py3-yaml libffi py3-requests
 COPY --from=builder /wheels /tmp/wheels
 RUN apk add --no-cache --virtual .pip-build-deps py3-pip \ 
     && pip3 install --no-cache-dir --break-system-packages /tmp/wheels/miniupnpc*.whl \ 
