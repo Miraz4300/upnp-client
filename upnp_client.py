@@ -66,7 +66,7 @@ def display_banner(upnp, mappings_count):
     # Try to get router info from device description XML
     router_info = "Unknown"
     try:
-        desc_url = getattr(upnp, 'urlbase', None) or getattr(upnp, 'location', None)
+        desc_url = getattr(upnp, 'descURL', None) or getattr(upnp, 'urlbase', None) or getattr(upnp, 'location', None)
         if desc_url:
             resp = requests.get(desc_url, timeout=5)
             if resp.ok:
@@ -79,7 +79,9 @@ def display_banner(upnp, mappings_count):
                     model_name = device.findtext('upnp:modelName', default='', namespaces=ns)
                     model_number = device.findtext('upnp:modelNumber', default='', namespaces=ns)
                     model_desc = device.findtext('upnp:modelDescription', default='', namespaces=ns)
-                    router_info = f"{friendly_name} | {manufacturer} {model_name} {model_number} {model_desc}".strip()
+                    # Only show non-empty fields
+                    info_parts = [friendly_name, manufacturer, model_name, model_number, model_desc]
+                    router_info = ' | '.join([part for part in info_parts if part])
     except Exception as e:
         router_info = f"Unknown (error: {e})"
     print(f"[✔] Router: {router_info}")
