@@ -97,22 +97,36 @@ signal.signal(signal.SIGTERM, signal_handler)
 # Function to get router information
 def get_router_info(upnp):
     try:
-        # Get device information using the correct methods
-        device_model = upnp.statusinfo().get('NewConnectionStatus', '')
-        device_type = upnp.connectiontype().get('NewConnectionType', '')
-        friendly_name = upnp.igddata.get('friendlyName', '')
-        manufacturer = upnp.igddata.get('manufacturer', '')
-        model_name = upnp.igddata.get('modelName', '')
-        model_description = upnp.igddata.get('modelDescription', '')
-        
-        # Construct router info from available attributes
+        # Access the IGD data which contains router information
         router_parts = []
-        if manufacturer:
-            router_parts.append(manufacturer)
-        if model_name:
-            router_parts.append(model_name)
-        if model_description and model_description not in router_parts:
-            router_parts.append(model_description)
+        
+        # Check if upnp object has these attributes with safe access
+        if hasattr(upnp, 'igddata'):
+            if isinstance(upnp.igddata, dict):
+                manufacturer = upnp.igddata.get('manufacturer', '')
+                model_name = upnp.igddata.get('modelName', '')
+                model_description = upnp.igddata.get('modelDescription', '')
+                friendly_name = upnp.igddata.get('friendlyName', '')
+                
+                if manufacturer:
+                    router_parts.append(manufacturer)
+                if model_name:
+                    router_parts.append(model_name)
+                if model_description and model_description not in router_parts:
+                    router_parts.append(model_description)
+                if friendly_name and friendly_name not in router_parts:
+                    router_parts.append(friendly_name)
+        
+        # If IGD data didn't provide enough info, try to get more
+        if not router_parts and hasattr(upnp, 'services'):
+            for service in upnp.services:
+                if service:
+                    router_parts.append(str(service).split('/')[-1])
+                    break
+                    
+        # As a last resort, use root device URL if available
+        if not router_parts and hasattr(upnp, 'urlbase') and upnp.urlbase:
+            router_parts.append(upnp.urlbase.split('//')[1].split(':')[0])
         
         router_name = " ".join(router_parts) if router_parts else "Unknown Router"
         return router_name
