@@ -97,15 +97,24 @@ signal.signal(signal.SIGTERM, signal_handler)
 # Function to get router information
 def get_router_info(upnp):
     try:
-        device_desc = upnp.get_validurl() or "Unknown"
-        device_model = upnp.device()
-        device_manufacturer = upnp.serverName() or "Unknown"
+        # Get device information using the correct methods
+        device_model = upnp.statusinfo().get('NewConnectionStatus', '')
+        device_type = upnp.connectiontype().get('NewConnectionType', '')
+        friendly_name = upnp.igddata.get('friendlyName', '')
+        manufacturer = upnp.igddata.get('manufacturer', '')
+        model_name = upnp.igddata.get('modelName', '')
+        model_description = upnp.igddata.get('modelDescription', '')
         
-        # Extract more readable name from the URL if possible
-        router_name = device_manufacturer
-        if device_model:
-            router_name = f"{router_name} {device_model}"
-            
+        # Construct router info from available attributes
+        router_parts = []
+        if manufacturer:
+            router_parts.append(manufacturer)
+        if model_name:
+            router_parts.append(model_name)
+        if model_description and model_description not in router_parts:
+            router_parts.append(model_description)
+        
+        router_name = " ".join(router_parts) if router_parts else "Unknown Router"
         return router_name
     except Exception as e:
         print(f"[!] Failed to get router information: {e}")
