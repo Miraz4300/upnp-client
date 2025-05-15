@@ -61,7 +61,28 @@ def display_banner(upnp, mappings_count):
 """)
     print("="*55)
     print(f"[✔] Hostname: {socket.gethostname()}")
-    print(f"[✔] Router: {upnp.friendlyname}")
+    # Try to get router info from device description XML
+    router_info = "Unknown"
+    try:
+        import requests
+        import xml.etree.ElementTree as ET
+        desc_url = getattr(upnp, 'urlbase', None) or getattr(upnp, 'location', None)
+        if desc_url:
+            resp = requests.get(desc_url, timeout=5)
+            if resp.ok:
+                xml_root = ET.fromstring(resp.text)
+                ns = {'upnp': 'urn:schemas-upnp-org:device-1-0'}
+                device = xml_root.find('.//upnp:device', ns)
+                if device is not None:
+                    friendly_name = device.findtext('upnp:friendlyName', default='', namespaces=ns)
+                    manufacturer = device.findtext('upnp:manufacturer', default='', namespaces=ns)
+                    model_name = device.findtext('upnp:modelName', default='', namespaces=ns)
+                    model_number = device.findtext('upnp:modelNumber', default='', namespaces=ns)
+                    model_desc = device.findtext('upnp:modelDescription', default='', namespaces=ns)
+                    router_info = f"{friendly_name} | {manufacturer} {model_name} {model_number} {model_desc}".strip()
+    except Exception as e:
+        router_info = f"Unknown (error: {e})"
+    print(f"[✔] Router: {router_info}")
     print(f"[✔] LAN IP: {upnp.lanaddr}")
     try:
         print(f"[✔] Public IP (via UPnP): {upnp.externalipaddress()}")
