@@ -7,6 +7,7 @@ import sys
 import socket
 import time
 from datetime import datetime
+import threading
 
 CONFIG_PATH = '/config/ports.yml'
 active_mappings = []
@@ -108,6 +109,38 @@ except Exception as e:
 # Store messages
 mapping_messages = []
 
+# Function to check if a port mapping exists
+def mapping_exists(external_port, protocol, lan_ip, internal_port):
+    try:
+        mapping = upnp.getspecificportmapping(external_port, protocol)
+        if mapping is None:
+            return False
+        # mapping: (internalClient, internalPort, desc, enabled, leaseDuration)
+        internalClient, internalPort = mapping[0], int(mapping[1])
+        return internalClient == lan_ip and internalPort == internal_port
+    except Exception:
+        return False
+
+# Function to refresh port mappings
+REFRESH_INTERVAL = 1800  # 30 minutes
+def refresh_mappings():
+    while True:
+        print("[*] Started port refreshing system...", flush=True)
+        time.sleep(REFRESH_INTERVAL)
+        for entry in config:
+            try:
+                internal_port = int(entry['internal_port'])
+                external_port = int(entry['external_port'])
+                protocol = entry['protocol'].upper()
+                if not mapping_exists(external_port, protocol, lan_ip, internal_port):
+                    upnp.addportmapping(external_port, protocol, lan_ip, internal_port, f"UPnP Rule {entry['id']}", '')
+                    print(f"[+] Refreshed mapping: {entry['name']} -> {external_port}/{protocol}", flush=True)
+                else:
+                    print(f"[i] Mapping for {entry['name']} -> {external_port}/{protocol} still exists. No refresh needed.", flush=True)
+            except Exception as e:
+                entry_name = entry.get('name', entry.get('id', 'Unknown Entry'))
+                print(f"[!] Failed to refresh mapping for '{entry_name}': {e}", flush=True)
+
 # Apply mappings
 for entry in config:
     try:
@@ -115,10 +148,12 @@ for entry in config:
         internal_port = int(entry['internal_port'])
         external_port = int(entry['external_port'])
         protocol = entry['protocol'].upper()
-
-        upnp.addportmapping(external_port, protocol, lan_ip, internal_port, f"UPnP Rule {entry['id']}", '')
-        active_mappings.append((external_port, protocol))
-        mapping_messages.append(f"[+] Mapped {protocol} {external_port} -> {lan_ip}:{internal_port} (Name: {entry['name']})")
+        if not mapping_exists(external_port, protocol, lan_ip, internal_port):
+            upnp.addportmapping(external_port, protocol, lan_ip, internal_port, f"UPnP Rule {entry['id']}", '')
+            active_mappings.append((external_port, protocol))
+            mapping_messages.append(f"[+] Mapped {entry['name']} -> {external_port}/{protocol} -> {lan_ip}:{internal_port}")
+        else:
+            mapping_messages.append(f"[i] Mapping for {entry['name']} -> {external_port}/{protocol} -> {lan_ip}:{internal_port} already exists. Skipping.")
     except Exception as e:
         entry_name = entry.get('name', entry.get('id', 'Unknown Entry'))
         mapping_messages.append(f"[!] Skipping entry '{entry_name}' due to error: {e}")
@@ -131,6 +166,10 @@ if mapping_messages:
     print("\n[i] Port Mapping Status:")
     for msg in mapping_messages:
         print(msg, flush=True)
+
+# Background thread to refresh mappings
+refresh_thread = threading.Thread(target=refresh_mappings, daemon=True)
+refresh_thread.start()
 
 # Stay alive
 print("\n[*] Container will now stay alive!")
